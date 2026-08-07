@@ -1,18 +1,18 @@
-export default function MovieCard(/* TODO: props */) {
+export default function MovieCard(/* TODO: props */{ title, poster, year, genre, rating, watched }) {
   // TODO: destructure props — title, poster, year, genre, rating, watched
 
   return (
     <div className="card bg-base-100 shadow-xl">
       <figure>
         <img
-          src={/* TODO: props */ ""}
-          alt={/* TODO: props */ ""}
+          src={/* TODO: props */ poster}
+          alt={/* TODO: props */ title}
           className="w-full h-80 object-cover"
         />
       </figure>
       <div className="card-body">
         <h2 className="card-title">
-          {/* TODO: props */}
+          {/* TODO: props */title}
           {/* TODO: conditional — show a "Top Rated" badge (badge-warning) if rating >= 8 */}
         </h2>
         <p className="text-sm opacity-70">
