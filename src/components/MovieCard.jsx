@@ -13,17 +13,22 @@ export default function MovieCard(/* TODO: props */{ title, poster, year, genre,
       <div className="card-body">
         <h2 className="card-title">
           {/* TODO: props */title}
-          {/* TODO: conditional — show a "Top Rated" badge (badge-warning) if rating >= 8 */}
+          {/* TODO: conditional — show a "Top Rated" badge (badge-warning) if rating >= 8 */rating >= 8 && <span className="badge badge-warning">Top Rated</span>}
         </h2>
         <p className="text-sm opacity-70">
-          {/* TODO: props — display like "Sci-Fi • 2010" */}
+          {/* TODO: props — display like "Sci-Fi • 2010" */} {genre} • {year}
         </p>
         <p className="text-sm">
-          ⭐ {/* TODO: props — rating */}
+          ⭐ {/* TODO: props — rating */rating} 
         </p>
         <div className="card-actions justify-end mt-2">
           {/* TODO: conditional — if watched, show "Watched ✓" (badge badge-success);
               otherwise show "Unwatched" (badge badge-ghost) */}
+              {watched ? (
+            <span className="badge badge-success">Watched ✓</span>
+          ) : (
+            <span className="badge badge-ghost">Unwatched</span>
+          )}
         </div>
       </div>
     </div>
