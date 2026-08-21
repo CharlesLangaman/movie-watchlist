@@ -1,35 +1,38 @@
-export default function MovieCard(/* TODO: props */{ title, poster, year, genre, rating, watched }) {
-  // TODO: destructure props — title, poster, year, genre, rating, watched
+export default function MovieCard({ id, title, poster, year, genre, rating, watched, onToggleWatched, onDelete }) {
 
   return (
     <div className="card bg-base-100 shadow-xl">
       <figure>
         <img
-          src={/* TODO: props */ poster}
-          alt={/* TODO: props */ title}
+          src={poster}
+          alt={title}
           className="w-full h-80 object-cover"
         />
       </figure>
       <div className="card-body">
         <h2 className="card-title">
-          {/* TODO: props */title}
-          {/* TODO: conditional — show a "Top Rated" badge (badge-warning) if rating >= 8 */}
+          {title}
           {rating >= 8 && <span className="badge badge-warning">Top Rated</span>}
         </h2>
         <p className="text-sm opacity-70">
-          {/* TODO: props — display like "Sci-Fi • 2010" */} {genre} • {year}
+          {genre} • {year}
         </p>
         <p className="text-sm">
-          ⭐ {/* TODO: props — rating */} {rating}
+          ⭐ {rating}
         </p>
         <div className="card-actions justify-end mt-2">
-          {/* TODO: conditional — if watched, show "Watched ✓" (badge badge-success);
-              otherwise show "Unwatched" (badge badge-ghost) */}
-              {watched ? (
-            <span className="badge badge-success">Watched ✓</span>
+          {watched ? (
+            <button onClick={() => onToggleWatched(id)} className="badge badge-success cursor-pointer border-0">
+              Watched ✓
+            </button>
           ) : (
-            <span className="badge badge-ghost">Unwatched</span>
+            <button onClick={() => onToggleWatched(id)} className="badge badge-ghost cursor-pointer border-0">
+              Unwatched
+            </button>
           )}
+          <button onClick={() => onDelete(id)} className="btn btn-sm btn-error btn-outline ml-2">
+            Delete
+          </button>
         </div>
       </div>
     </div>
