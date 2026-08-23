@@ -4,11 +4,29 @@ import AddMovieForm from "./components/AddMovieForm";
 import FilterBar from "./components/FilterBar";
 import SummaryBar from "./components/SummaryBar";
 import initialMovies from "./data/movies";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 export default function App() {
-  const [movies, setMovies] = useState(initialMovies);
+  const [movies, setMovies] = useState(() => {
+    const saved = localStorage.getItem("movies");
+    return saved ? JSON.parse(saved) : initialMovies;
+  });
   const [filter, setFilter] = useState("all");
+
+  useEffect(() => {
+    localStorage.setItem("movies", JSON.stringify(movies));
+  }, [movies]);
+
+  useEffect(() => {
+    document.title = `Movie Watchlist (${movies.length})`;
+  }, [movies.length]);
+
+  // Task 4: Handle clearing the entire watchlist
+  const handleClearAll = () => {
+    if (confirm("Clear your entire watchlist? This cannot be undone.")) {
+      setMovies([]);
+    }
+  };
 
   const handleToggleWatched = (id) => {
     setMovies(
@@ -40,7 +58,7 @@ export default function App() {
           A collection of movies I've watched and want to watch.
         </p>
       </div>
-      <SummaryBar movies={movies} />
+      <SummaryBar movies={movies} onClearAll={handleClearAll} />
       <AddMovieForm onAddMovie={handleAddMovie} />
       <FilterBar currentFilter={filter} onChangeFilter={setFilter} />
       <MovieList 
