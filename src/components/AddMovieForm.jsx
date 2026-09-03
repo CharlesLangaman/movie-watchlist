@@ -19,7 +19,6 @@ const AddMovieForm = ({ onAddMovie }) => {
       watched: false,
     });
     
-    // Optional: Reset form fields after submit
     setTitle("");
     setPoster("");
     setGenre("");

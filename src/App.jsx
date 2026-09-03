@@ -3,8 +3,11 @@ import MovieList from "./components/MovieList";
 import AddMovieForm from "./components/AddMovieForm";
 import FilterBar from "./components/FilterBar";
 import SummaryBar from "./components/SummaryBar";
+import SearchBar from "./components/SearchBar";
+import SearchResults from "./components/SearchResults";
 import initialMovies from "./data/movies";
 import { useState, useEffect } from "react";
+import { searchMovies, toWatchlistMovie } from "./api/tmdb";
 
 export default function App() {
   const [movies, setMovies] = useState(() => {
@@ -12,6 +15,11 @@ export default function App() {
     return saved ? JSON.parse(saved) : initialMovies;
   });
   const [filter, setFilter] = useState("all");
+
+  const [results, setResults] = useState([]);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     localStorage.setItem("movies", JSON.stringify(movies));
@@ -21,7 +29,32 @@ export default function App() {
     document.title = `Movie Watchlist (${movies.length})`;
   }, [movies.length]);
 
-  // Task 4: Handle clearing the entire watchlist
+  useEffect(() => {
+    if (!searchTerm) return; 
+
+    let isCancelled = false;
+
+    const fetchResults = async () => {
+      setIsLoading(true);
+      setError(null);
+
+      try {
+        const fetchedMovies = await searchMovies(searchTerm);
+        if (!isCancelled) setResults(fetchedMovies);
+      } catch (err) {
+        if (!isCancelled) setError("Failed to fetch movies. Try again.");
+      } finally {
+        if (!isCancelled) setIsLoading(false);
+      }
+    };
+
+    fetchResults();
+
+    return () => {
+      isCancelled = true;
+    };
+  }, [searchTerm]);
+
   const handleClearAll = () => {
     if (confirm("Clear your entire watchlist? This cannot be undone.")) {
       setMovies([]);
@@ -44,6 +77,13 @@ export default function App() {
     setMovies([...movies, newMovie]);
   };
 
+  const handleAddFromSearch = (movie) => {
+    const newWatchlistMovie = toWatchlistMovie(movie);
+    if (!movies.some((m) => m.id === newWatchlistMovie.id)) {
+      setMovies([...movies, newWatchlistMovie]);
+    }
+  };
+
   const visibleMovies = movies.filter((movie) => {
     if (filter === "watched") return movie.watched;
     if (filter === "unwatched") return !movie.watched;
@@ -52,20 +92,28 @@ export default function App() {
 
   return (
     <Layout>
-      <div className="mb-6">
-        <h1 className="text-3xl font-bold">My Watchlist</h1>
-        <p className="opacity-70">
-          A collection of movies I've watched and want to watch.
-        </p>
+      <div className="container mx-auto p-4">
+        <h1 className="text-3xl font-bold mb-6">Movie Watchlist</h1>
+
+        <SearchBar onSearch={setSearchTerm} />
+        <SearchResults
+          results={results}
+          onAdd={handleAddFromSearch}
+          isLoading={isLoading}
+          error={error}
+        />
+
+        <hr className="my-6" />
+
+        <SummaryBar movies={movies} onClearAll={handleClearAll} />
+        <AddMovieForm onAddMovie={handleAddMovie} />
+        <FilterBar currentFilter={filter} onChangeFilter={setFilter} />
+        <MovieList
+          movies={visibleMovies}
+          onToggleWatched={handleToggleWatched}
+          onDelete={handleDeleteMovie}
+        />
       </div>
-      <SummaryBar movies={movies} onClearAll={handleClearAll} />
-      <AddMovieForm onAddMovie={handleAddMovie} />
-      <FilterBar currentFilter={filter} onChangeFilter={setFilter} />
-      <MovieList 
-        movies={visibleMovies} 
-        onToggleWatched={handleToggleWatched} 
-        onDelete={handleDeleteMovie} 
-      />
     </Layout>
   );
 }
